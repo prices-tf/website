@@ -33,11 +33,3 @@ jobs:
           semantic_version: 17
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Notify deploy hook
-      uses: fjogeleit/http-request-action@master
-      with:
-        url: ${{ secrets.DEPLOY_HOOK }}
-        method: 'POST'
