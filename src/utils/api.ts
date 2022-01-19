@@ -6,6 +6,7 @@ import createAuthRefreshInterceptor, {
 import {
   AuthRefresh,
   History,
+  Paginated,
   Price,
 } from '../shared/interfaces/api.interface';
 
@@ -44,11 +45,24 @@ const refreshAuthLogic = (err: AxiosError) =>
 
 createAuthRefreshInterceptor(api, refreshAuthLogic);
 
-export function getHistory(sku: string, interval: number): Promise<History[]> {
+export function getHistoryWithInterval(
+  sku: string,
+  interval: number,
+): Promise<History[]> {
   return api
     .get<History[]>('/history/' + sku + '/interval', {
       params: {
         interval,
+      },
+    })
+    .then((res) => res.data);
+}
+
+export function getHistory(sku: string): Promise<Paginated<History>> {
+  return api
+    .get<Paginated<History>>('/history/' + sku, {
+      params: {
+        order: 'ASC',
       },
     })
     .then((res) => res.data);
