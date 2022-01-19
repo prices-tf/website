@@ -16,7 +16,7 @@ export default function Navbar() {
           <a className="inline-flex items-center p-2 mr-4">
             <Image
               src="/favicon.ico"
-              alt="Vercel Logo"
+              alt="Prices.tf logo"
               width={48}
               height={48}
             />
