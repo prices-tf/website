@@ -19,6 +19,7 @@ export default function Navbar() {
               alt="Prices.tf logo"
               width={48}
               height={48}
+              unoptimized={true}
             />
             <span className="text-xl text-white font-bold uppercase tracking-wide">
               Prices.tf
