@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { ChangeEvent, useEffect, useState } from 'react';
 import {
@@ -51,89 +52,99 @@ export default function ItemPage() {
       : data.find((v) => v.sellValue > keyPrice.sellHalfScrap);
 
   return (
-    <div className="container mx-auto md:mt-10">
-      <div className="text-center">
-        <h1 className="text-xl">Price history of {router.query.sku}</h1>
-      </div>
-      <div className="md:grid grid-flow-row-dense grid-cols-5 rounded-xl shadow-md px-4">
-        <div className="sm:h-16 mx-auto">
-          <div>
-            <p>SKU: {router.query.sku}</p>
+    <div>
+      <Head>
+        <title>Price history of {router.query.sku}</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+      <div className="container mx-auto mt-10">
+        <div className="text-center">
+          <h1 className="text-xl">Price history of {router.query.sku}</h1>
+        </div>
+        <div className="md:grid grid-flow-row-dense grid-cols-5 rounded-xl shadow-md px-4">
+          <div className="sm:h-16 mx-auto">
             <div>
-              <p>
-                Interval:{' '}
-                <select
-                  id="interval"
-                  defaultValue={24 * 60 * 60 * 1000}
-                  onChange={onIntervalChange}
-                >
-                  <option value={30 * 60 * 1000}>30 minutes</option>
-                  <option value={60 * 60 * 1000}>1 hour</option>
-                  <option value={2 * 60 * 60 * 1000}>2 hours</option>
-                  <option value={4 * 60 * 60 * 1000}>4 hours</option>
-                  <option value={12 * 60 * 60 * 1000}>12 hours</option>
-                  <option value={24 * 60 * 60 * 1000}>24 hours</option>
-                </select>
-              </p>
+              <p>SKU: {router.query.sku}</p>
+              <div>
+                <p>
+                  Interval:{' '}
+                  <select
+                    id="interval"
+                    defaultValue={24 * 60 * 60 * 1000}
+                    onChange={onIntervalChange}
+                  >
+                    <option value={30 * 60 * 1000}>30 minutes</option>
+                    <option value={60 * 60 * 1000}>1 hour</option>
+                    <option value={2 * 60 * 60 * 1000}>2 hours</option>
+                    <option value={4 * 60 * 60 * 1000}>4 hours</option>
+                    <option value={12 * 60 * 60 * 1000}>12 hours</option>
+                    <option value={24 * 60 * 60 * 1000}>24 hours</option>
+                  </select>
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="col-span-4 h-96 py-10">
-          {keyPrice === undefined ? (
-            <p>Loading</p>
-          ) : (
-            <ResponsiveContainer width="100%">
-              <LineChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="createdAt"
-                  tickFormatter={(tickItem) =>
-                    tickItem.toLocaleString('default', {
-                      dateStyle: 'medium',
-                    })
-                  }
-                />
-                <YAxis
-                  domain={['auto', 'auto']}
-                  tickFormatter={(t) => {
-                    if (priceInKeys) {
-                      return truncate(t / keyPrice.sellHalfScrap) + ' keys';
-                    } else {
-                      return truncate(t / 18) + ' ref';
+          <div className="col-span-4 h-96 py-10">
+            {keyPrice === undefined ? (
+              <p>Loading</p>
+            ) : (
+              <ResponsiveContainer width="100%">
+                <LineChart data={data}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="createdAt"
+                    tickFormatter={(tickItem) =>
+                      tickItem.toLocaleString('default', {
+                        dateStyle: 'medium',
+                      })
                     }
-                  }}
-                />
-                <Tooltip
-                  labelFormatter={(t) =>
-                    t.toLocaleString('default', {
-                      timeStyle: 'short',
-                      dateStyle: 'medium',
-                    })
-                  }
-                  formatter={(value: number, name: 'Buy' | 'Sell', x: any) => {
-                    return x.payload[
-                      name === 'Buy' ? 'buyDisplay' : 'sellDisplay'
-                    ];
-                  }}
-                />
-                <Legend wrapperStyle={{ position: 'relative' }} />
-                <Line
-                  name="Sell"
-                  type="step"
-                  dataKey="sellValue"
-                  stroke="#ec1c24"
-                  dot={{ r: 0 }}
-                />
-                <Line
-                  name="Buy"
-                  type="step"
-                  dataKey="buyValue"
-                  stroke="#0094d9"
-                  dot={{ r: 0 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          )}
+                  />
+                  <YAxis
+                    domain={['auto', 'auto']}
+                    tickFormatter={(t) => {
+                      if (priceInKeys) {
+                        return truncate(t / keyPrice.sellHalfScrap) + ' keys';
+                      } else {
+                        return truncate(t / 18) + ' ref';
+                      }
+                    }}
+                  />
+                  <Tooltip
+                    labelFormatter={(t) =>
+                      t.toLocaleString('default', {
+                        timeStyle: 'short',
+                        dateStyle: 'medium',
+                      })
+                    }
+                    formatter={(
+                      value: number,
+                      name: 'Buy' | 'Sell',
+                      x: any,
+                    ) => {
+                      return x.payload[
+                        name === 'Buy' ? 'buyDisplay' : 'sellDisplay'
+                      ];
+                    }}
+                  />
+                  <Legend wrapperStyle={{ position: 'relative' }} />
+                  <Line
+                    name="Sell"
+                    type="step"
+                    dataKey="sellValue"
+                    stroke="#ec1c24"
+                    dot={{ r: 0 }}
+                  />
+                  <Line
+                    name="Buy"
+                    type="step"
+                    dataKey="buyValue"
+                    stroke="#0094d9"
+                    dot={{ r: 0 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </div>
         </div>
       </div>
     </div>
