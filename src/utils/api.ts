@@ -3,7 +3,11 @@ import createAuthRefreshInterceptor, {
   AxiosAuthRefreshRequestConfig,
 } from 'axios-auth-refresh';
 
-import { AuthRefresh, History } from '../shared/interfaces/api.interface';
+import {
+  AuthRefresh,
+  History,
+  Price,
+} from '../shared/interfaces/api.interface';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL ?? 'https://api2.prices.tf',
@@ -48,6 +52,10 @@ export function getHistory(sku: string, interval: number): Promise<History[]> {
       },
     })
     .then((res) => res.data);
+}
+
+export function getPrice(sku: string): Promise<Price> {
+  return api.get<Price>('/prices/' + sku).then((res) => res.data);
 }
 
 function refreshAccessToken(): Promise<string> {
