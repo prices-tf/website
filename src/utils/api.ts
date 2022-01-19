@@ -58,7 +58,7 @@ export function getPrice(sku: string): Promise<Price> {
   return api.get<Price>('/prices/' + sku).then((res) => res.data);
 }
 
-function refreshAccessToken(): Promise<string> {
+export function refreshAccessToken(): Promise<string> {
   return api
     .post<AuthRefresh>('/auth/access')
     .then((res) => res.data.accessToken);
