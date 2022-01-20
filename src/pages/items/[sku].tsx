@@ -27,7 +27,7 @@ export default function ItemPage() {
   const router = useRouter();
 
   const page = useRef<number>(1);
-  const [maxPages, setMaxPages] = useState<number>(Infinity);
+  const [maxPages, setMaxPages] = useState<number>(1);
   const [data, setData] = useState<Data[]>([]);
   const [keyPrice, setKeyPrice] = useState<Price>();
 
