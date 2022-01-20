@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   CartesianGrid,
   Legend,
@@ -26,15 +26,18 @@ interface Data {
 export default function ItemPage() {
   const router = useRouter();
 
+  const page = useRef<number>(1);
+  const [maxPages, setMaxPages] = useState<number>(Infinity);
   const [data, setData] = useState<Data[]>([]);
   const [keyPrice, setKeyPrice] = useState<Price>();
 
   useEffect(() => {
     if (!router.isReady) return;
 
-    getData(router.query.sku as string).then(([data, keyPrice]) => {
+    getData(router.query.sku as string, 1).then(([data, keyPrice, max]) => {
       setKeyPrice(keyPrice);
       setData(data);
+      setMaxPages(max);
     });
   }, [router.isReady, router.query.sku]);
 
@@ -54,6 +57,24 @@ export default function ItemPage() {
       <div className="container mx-auto mt-10">
         <div className="text-center">
           <h1 className="text-xl">Price history of {router.query.sku}</h1>
+        </div>
+        <div className="text-center mt-5">
+          {maxPages > page.current && (
+            <button
+              onClick={() => {
+                page.current++;
+                getData(router.query.sku as string, page.current).then(
+                  ([newData, keyPrice]) => {
+                    setKeyPrice(keyPrice);
+                    setData(newData.concat(data));
+                  },
+                );
+              }}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Load more data
+            </button>
+          )}
         </div>
         <div className="rounded-xl shadow-md px-4 h-96 py-10">
           {keyPrice === undefined ? (
@@ -118,28 +139,34 @@ export default function ItemPage() {
   );
 }
 
-async function getData(sku: string): Promise<[Data[], Price]> {
+async function getData(
+  sku: string,
+  page: number,
+): Promise<[Data[], Price, number]> {
   const [data, keyPrice] = await Promise.all([
-    getHistory(sku),
+    getHistory(sku, 'DESC', page),
     getPrice('5021;6'),
   ]);
 
   return [
-    data.items.map((element) => {
-      const buyValue =
-        element.buyHalfScrap + element.buyKeys * keyPrice.sellHalfScrap;
-      const sellValue =
-        element.sellHalfScrap + element.sellKeys * keyPrice.sellHalfScrap;
+    data.items
+      .map((element) => {
+        const buyValue =
+          element.buyHalfScrap + element.buyKeys * keyPrice.sellHalfScrap;
+        const sellValue =
+          element.sellHalfScrap + element.sellKeys * keyPrice.sellHalfScrap;
 
-      return {
-        buyValue,
-        sellValue,
-        buyDisplay: displayPrice(element.buyKeys, element.buyHalfScrap),
-        sellDisplay: displayPrice(element.sellKeys, element.sellHalfScrap),
-        createdAt: new Date(element.createdAt),
-      };
-    }),
+        return {
+          buyValue,
+          sellValue,
+          buyDisplay: displayPrice(element.buyKeys, element.buyHalfScrap),
+          sellDisplay: displayPrice(element.sellKeys, element.sellHalfScrap),
+          createdAt: new Date(element.createdAt),
+        };
+      })
+      .reverse(),
     keyPrice,
+    data.meta.totalPages,
   ];
 }
 

@@ -58,11 +58,18 @@ export function getHistoryWithInterval(
     .then((res) => res.data);
 }
 
-export function getHistory(sku: string): Promise<Paginated<History>> {
+export function getHistory(
+  sku: string,
+  order: 'DESC' | 'ASC',
+  page?: number,
+  limit?: number,
+): Promise<Paginated<History>> {
   return api
     .get<Paginated<History>>('/history/' + sku, {
       params: {
-        order: 'ASC',
+        order,
+        limit,
+        page,
       },
     })
     .then((res) => res.data);
