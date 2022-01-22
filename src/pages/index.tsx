@@ -82,9 +82,7 @@ const Home: NextPage = () => {
 
         <div className="mt-10">
           <div className="text-center">
-            <h1 className="text-xl">
-              Recently priced items will be shown below
-            </h1>
+            <h1 className="text-xl">Recently priced items will appear below</h1>
           </div>
           <div className="mt-2 mx-auto bg-white rounded-xl shadow-md overflow-hidden max-w-sm">
             {priceChangeHistory.map((message, idx) => (
